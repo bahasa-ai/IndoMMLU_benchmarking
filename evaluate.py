@@ -57,7 +57,8 @@ def parse_args():
     parser.add_argument("--by_letter", action='store_true')
     parser.add_argument("--base_model", type=str, help="Path to pretrained model", required=True)
     parser.add_argument("--lora_weights", type=str, default="x")
-    parser.add_argument("--output_folder", type=str, default="output", required=True)
+    parser.add_argument("--output_folder", type=str, default="output")
+    parser.add_argument("--output_filename", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -69,7 +70,7 @@ def main():
     tokenizer_class = LlamaTokenizer if 'llama' in args.base_model else AutoTokenizer
     model_class = LlamaForCausalLM if 'llama' in args.base_model else AutoModelForCausalLM
 
-    SAVE_FILE = '{args.output_folder}/result_{args.base_model.split("/")[-1]}_{args.by_letter}.csv'
+    SAVE_FILE = f'{args.output_folder}/{args.output_filename}'
     tokenizer = tokenizer_class.from_pretrained(args.base_model)
     
     if 'mt0' in args.base_model:
@@ -88,7 +89,7 @@ def main():
             args.lora_weights,
             torch_dtype=torch.float16,
         )
-        SAVE_FILE = '{args.output_folder}/result_{args.lora_weight.split("/")[-1]}_{args.by_letter}.csv'
+        SAVE_FILE = f'{args.output_folder}/result_{args.lora_weight.split("/")[-1]}_{args.by_letter}.csv'
 
     # unwind broken decapoda-research config
     if 'llama' in args.base_model:
@@ -127,3 +128,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
